@@ -1,0 +1,56 @@
+\documentclass[10pt]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath}
+\setbeamertemplate{navigation symbols}{}
+
+\usetheme{CambridgeUS}
+\usecolortheme{spruce}
+
+\title{Analyse d'un égaliseur analogique}
+\author[chab1704 \& TODO]{Benjamin Chausse (chab1704)\\ Cédrick Pelchat (TODO)}
+\institute[UdeS]{Université de Sherbrooke}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% Default chunk options + python engine by default
+<<ChunkSetup,echo=FALSE>>=
+library(knitr)
+opts_chunk$set(message=FALSE, warning=FALSE, fig.width=2, fig.height=2,engine='python')
+@
+<<PySetup,echo=FALSE>>=
+import numpy as np
+import matplotlib.pyplot as plt
+@
+
+% python initialization (libraries, etc...)
+
+\section{Test}
+\begin{frame}[fragile]
+Aucun code ne devrait apparaître ici après ce paragraphe.
+Mais ici, oui:
+<<Test,echo=TRUE>>=
+RESOLUTION=1000
+t=np.linspace(0,4*np.pi,RESOLUTION)
+x=np.sin(t)
+@
+\end{frame}
+
+
+\begin{frame}[fragile]
+Ici nous pouvons voir un graphique.
+\begin{figure}
+<<Test2>>=
+plt.plot(t,x)
+plt.show()
+@
+\caption{Un graphique}
+\end{figure}
+\end{frame}
+
+\end{document}
+

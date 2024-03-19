@@ -1,0 +1,18 @@
+@document.meta
+title: Documentation utile pour le projet
+description: [
+Ressources de documentation suggérée dans le site de session pour le
+projet.
+]
+authors: Benjamin Chausse
+categories:
+created: 2024-03-19T10:35:05-0500
+updated: 2024-03-19T10:35:58-0500
+version: 1.1.1
+@end
+
+* Numpy {https://numpy.org/doc/stable/reference/index.html#reference}
+* Scipy Signal {https://docs.scipy.org/doc/scipy/reference/signal.html}
+* Matplotlib {https://matplotlib.org/stable/api/index.html}
+** Cheat Sheet {https://matplotlib.org/cheatsheets/}
+** Exemples {https://matplotlib.org/stable/gallery/index.html}
