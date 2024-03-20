@@ -1,7 +1,6 @@
 \documentclass[10pt]{beamer}
 
 \usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
 \usepackage{amsmath}
 \setbeamertemplate{navigation symbols}{}
@@ -20,7 +19,15 @@
 % Default chunk options + python engine by default
 <<ChunkSetup,echo=FALSE>>=
 library(knitr)
-opts_chunk$set(message=FALSE, warning=FALSE, fig.width=2, fig.height=2,engine='python')
+opts_chunk$set(
+  message=FALSE,
+  warning=FALSE,
+  fig.width=4,
+  fig.height=4,
+  engine='python',
+  out.width='.5\\textwidth',
+  highlight=FALSE
+)
 @
 <<PySetup,echo=FALSE>>=
 import numpy as np
@@ -33,7 +40,7 @@ import matplotlib.pyplot as plt
 \begin{frame}[fragile]
 Aucun code ne devrait apparaître ici après ce paragraphe.
 Mais ici, oui:
-<<Test,echo=TRUE>>=
+<<SineCode>>=
 RESOLUTION=1000
 t=np.linspace(0,4*np.pi,RESOLUTION)
 x=np.sin(t)
@@ -44,11 +51,12 @@ x=np.sin(t)
 \begin{frame}[fragile]
 Ici nous pouvons voir un graphique.
 \begin{figure}
-<<Test2>>=
+<<SinePlot,echo=FALSE>>=
 plt.plot(t,x)
 plt.show()
 @
 \caption{Un graphique}
+\label{fig:sine}
 \end{figure}
 \end{frame}
 
