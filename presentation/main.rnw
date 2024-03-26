@@ -86,11 +86,20 @@ plt.rcParams.update({'ytick.labelsize': 4.0})
 \subsection{GEN211: Conception générale}
 
 % TODO: Explication via le schéma bloc
-%   - [ ] Fig: Schéma bloc
-%   - [ ] Explication des blocs
+%   - [X] Fig: Schéma bloc
+%   - [X] Explication des blocs
 %   - [ ] Les buts du client sont-ils atteints (déphasage, ronflement)
 %   - [ ] Le schéma bloc réponds-t-il à ces besoins
 %     - [ ] Preuves avec fonction de transfert python
+
+\begin{frame}
+  \frametitle{Idée générale}
+  \begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figure/schema-bloc.png}
+    \caption{Schéma bloc du système (un canal)}
+  \end{figure}
+\end{frame}
 
 \subsection{GEN211: Présentation du lieu de bode}
 
@@ -141,9 +150,15 @@ plt.rcParams.update({'ytick.labelsize': 4.0})
   \begin{align}
     \frac{V_e - V_x}{R} &= \frac{V_x - V_s}{R} + \frac{V_x}{Z_{C_2}} + \frac{V_x}{R_2} \\
     \frac{V_e}{R} &= \frac{2V_x}{R} - \frac{V_s}{R} + \frac{V_x}{Z_{C_2}} + \frac{V_x}{R_2} \\
-    \frac{V_e}{R} &= V_x \left(
-      \frac{R}{R} + \frac{1}{Z_{C_2}} + \frac{1}{R_2}
-    \right) - \frac{V_s}{R} \\
+    \frac{V_e}{R} &= V_x \left( \frac{R}{R} + \frac{1}{Z_{C_2}} + \frac{1}{R_2} \right) - \frac{V_s}{R} \\
+    V_e + V_s &= R V_x \left( \frac{R}{R} + \frac{1}{Z_{C_2}} + \frac{1}{R_2} \right) \\
+  \end{align}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Papier 4}
+  \begin{align}
+    V_e &= RV_x \left( \frac{R}{R} + \frac{1}{R_2} + \right)
   \end{align}
 \end{frame}
 
