@@ -61,7 +61,7 @@ def pzmap1(z, p, title):
 
 
 ###############################################################################
-def bode1(w, mag, phlin, title):
+def bode1(w, mag, phlin, title, printFig=True):
     """
     Affiche le lieu un lieu de bode déjà calculé
 
@@ -71,8 +71,13 @@ def bode1(w, mag, phlin, title):
     :param title: titre du graphique
     :return: handles des éléments graphiques générés
     """
+    fig = []
+    ax = []
 
-    fig, ax = plt.subplots(2, 1, figsize=(6, 6))
+    if printFig:
+        fig, ax = plt.subplots(2, 1, figsize=(6, 6))
+    else:
+        _, ax = plt.subplots(2, 1, figsize=(6, 6))
     # fig.suptitle(title + ' Frequency Response')
 
     ax[0].plot(w, mag)
@@ -91,11 +96,14 @@ def bode1(w, mag, phlin, title):
     # fixe les limites du graphiques en gardant une marge minimale
     ax[1].set_xlim(10 ** (np.floor(np.log10(np.amin(w))) - 0.1), 10 ** (np.ceil(np.log10(np.amax(w))) + .1))
     ax[1].set_ylim(20 * (np.floor(np.amin(phlin) / 20) - 1), 20 * (np.floor(np.amax(phlin) / 20) + 2))
-    return fig, ax
+    if printFig:
+        return fig, ax
+    else:
+        return ax
 
 
 ###############################################################################
-def bodeplot(b, a, title):
+def bodeplot(b, a, title, printFig=True):
     """
     Calcule et affiche le lieu de bode d'une FT
 
@@ -111,7 +119,10 @@ def bodeplot(b, a, title):
     ph = np.unwrap(np.angle(h), period=np.pi) if np.__version__ > '1.21' else \
         np.unwrap(2*np.angle(h))/2  # calcul du déphasage en radians
     phlin = np.rad2deg(ph)  # déphasage en degrés
-    fig, ax = bode1(w, mag, phlin, title)
+    if printFig:
+        fig, ax = bode1(w, mag, phlin, title)
+    else:
+        fig, ax = bode1(w, mag, phlin, title, printFig=False)
     return mag, ph, w, fig, ax
 
 

@@ -169,14 +169,14 @@ def butterworth(freq, type):
   wc = 2 * np.pi * freq  # fréquence de coupure rad/s
   b1, a1 = signal.butter(2, wc, type, analog=True)
   return b1, a1
-# TODO: Ajouter les fonctions de transfert des autres filtres
 @
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Fonction de transfert python (suite)}
+\frametitle{Attente des buts du client}
 \begin{itemize}
-  \item TODO: Les buts du client sont-ils atteints (déphasage, ronflement)
+  \item Les déphasages naturel des filtres sont correctement corrigés
+  \item Le ronflement est atténué par l'utilisation d'Ampli-Op dans nos filtres
 \end{itemize}
 \end{frame}
 
@@ -231,7 +231,7 @@ graph_bode(at, bt)
 \frametitle{Analyse des signaux aux points 1}
 \footnotesize
 \begin{align}
-  Y(t)&=0.25\left|H_{1}\right|\left|H_{2}\right| \sin \left[2 \pi f t+\angle H_{1}+\angle H_{2}\right] \\
+  Y(t)&=0.25\left|H_{1}\right|\cdot\left|H_{2}\right| \sin \left[2 \pi f t+\angle H_{1}+\angle H_{2}\right] \\
   \left|H_{1}\right|&=\frac{\left|-j^{2} \omega^{2}\right|}{\left|j^{2} \omega^{2}+8824 j \omega+3.94 E 9\right|} \\
   \left|H_{1}\right|&=0.989 \\
   \left|H_{2}\right|&=\frac{\left|991102673^{2}\right|}{\left|-\omega^{2}+45044 \omega j+991102673\right|} \\
@@ -340,6 +340,9 @@ graph_bode(az, bz)
 \begin{figure}
 \centering
 <<DelayCorrectedPlot,echo=FALSE>>=
+b1, a1 = butterworth(7000, 'high')
+magp, php, wp, fig, ax = hp.bodeplot(b1, a1, "Délai de groupe",printFig=False)
+hp.grpdel1(wp, -np.diff(php) / np.diff(wp), "Délai de groupe")
 @
 \caption{Délai de groupe du filtre corrigé}
 \label{fig:delay-corrected}
@@ -400,37 +403,37 @@ graph_bode(az, bz)
 \end{frame}
 
 
-\section{Slides non-triées TODO: à trier}
-
-\begin{frame}
-  \frametitle{Papier 3}
-  \begin{align}
-    \frac{V_x-0}{R_2} &= \frac{0-V_s}{2C_3} \\
-    \frac{V_x}{R_2} &= \frac{-V_s}{2C_3} \\
-    V_x &= \frac{-V_sR_2}{2C_3} \\
-    \frac{V_e - V_x}{R} &= \frac{V_x - V_s}{R} + \frac{V_x}{Z_{C_2}} + \frac{V_x}{R_2} \\
-    \frac{V_e}{R} &= \frac{2V_x}{R} - \frac{V_s}{R} + \frac{V_x}{Z_{C_2}} + \frac{V_x}{R_2} \\
-    % XXX: C'est quoi qui est réellement ecrit au R/R ?
-    \frac{V_e}{R} &= V_x \left( \frac{2}{R} + \frac{1}{Z_{C_2}} + \frac{1}{R_2} \right) - \frac{V_s}{R} \\
-    V_e + V_s &= R V_x \left( \frac{2}{R} + \frac{1}{Z_{C_2}} + \frac{1}{R_2} \right)
-  \end{align}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Papier 4}
-  \begin{align}
-    V_e &= RV_x \left( \frac{2}{R} + \frac{1}{R_2} + \right) \\
-    V_s &= \frac{-V_xZ_{C_3}}{R_2} \\
-    % XXX: 2/R ou 1/R (premiere frac du \left( \right) )?
-    H &= \frac {\frac{-1}{R_2sC_3} }{
-           R\left(\frac{2}{R}+\frac{1}{R_2}+\frac{sC_2}{1}\right)+\frac{1}{R_2sC_3}
-         } \\
-    H &= \frac{1}{ RR_2sC_3 + \left(\frac{2}{R} + \frac{1}{R_2} + sC_2\right)+1 } \\
-    H &= \frac{1}{s\left[(R_2+2R)C_3\right]+R R_2 C_2 C_3 s^2 +1} \\
-    H &= \frac{\frac{1}{R R_2 C_2 C_3}}{
-      s^2 + s\left[\frac{R_2 + 2R}{R R_2 C_2}\right]+\frac{1}{R R_2 C_2 C_3}
-    }
-  \end{align}
-\end{frame}
+% \section{Slides non-triées TODO: à trier}
+%
+% \begin{frame}
+%   \frametitle{Papier 3}
+%   \begin{align}
+%     \frac{V_x-0}{R_2} &= \frac{0-V_s}{2C_3} \\
+%     \frac{V_x}{R_2} &= \frac{-V_s}{2C_3} \\
+%     V_x &= \frac{-V_sR_2}{2C_3} \\
+%     \frac{V_e - V_x}{R} &= \frac{V_x - V_s}{R} + \frac{V_x}{Z_{C_2}} + \frac{V_x}{R_2} \\
+%     \frac{V_e}{R} &= \frac{2V_x}{R} - \frac{V_s}{R} + \frac{V_x}{Z_{C_2}} + \frac{V_x}{R_2} \\
+%     % XXX: C'est quoi qui est réellement ecrit au R/R ?
+%     \frac{V_e}{R} &= V_x \left( \frac{2}{R} + \frac{1}{Z_{C_2}} + \frac{1}{R_2} \right) - \frac{V_s}{R} \\
+%     V_e + V_s &= R V_x \left( \frac{2}{R} + \frac{1}{Z_{C_2}} + \frac{1}{R_2} \right)
+%   \end{align}
+% \end{frame}
+%
+% \begin{frame}
+%   \frametitle{Papier 4}
+%   \begin{align}
+%     V_e &= RV_x \left( \frac{2}{R} + \frac{1}{R_2} + \right) \\
+%     V_s &= \frac{-V_xZ_{C_3}}{R_2} \\
+%     % XXX: 2/R ou 1/R (premiere frac du \left( \right) )?
+%     H &= \frac {\frac{-1}{R_2sC_3} }{
+%            R\left(\frac{2}{R}+\frac{1}{R_2}+\frac{sC_2}{1}\right)+\frac{1}{R_2sC_3}
+%          } \\
+%     H &= \frac{1}{ RR_2sC_3 + \left(\frac{2}{R} + \frac{1}{R_2} + sC_2\right)+1 } \\
+%     H &= \frac{1}{s\left[(R_2+2R)C_3\right]+R R_2 C_2 C_3 s^2 +1} \\
+%     H &= \frac{\frac{1}{R R_2 C_2 C_3}}{
+%       s^2 + s\left[\frac{R_2 + 2R}{R R_2 C_2}\right]+\frac{1}{R R_2 C_2 C_3}
+%     }
+%   \end{align}
+% \end{frame}
 
 \end{document}
