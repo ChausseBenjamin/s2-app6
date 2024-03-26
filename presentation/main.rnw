@@ -189,7 +189,7 @@ def butterworth(freq, type):
 \begin{frame}[fragile]
 % TODO: Print stuff related to K1 and K2
 % TODO: Maybe split this in two slides
-\frametitle{Détermination de $K_1$ et $K_2$}
+\frametitle{Validation de $K_1$ et $K_2$}
 <<K1K2>>=
 k2 = 47.5/60.4
 # Passe bande
@@ -206,12 +206,7 @@ zz, pz, kz = hp.paratf(zb, pb, -kb, zh, ph, -kh)
 zt, pt, kt = hp.paratf(zz, pz, kz, zp, pp, kp*k2)
 # Fonction de transfert du circuit complet
 at, bt = signal.zpk2tf(zt, pt, kt)
-# TODO: print k1 and k2
 @
-\textbf{Fonctions rencontrées par $K_1$ et $K_2$}
-\begin{itemize}
-  \item TODO: Expliquer pourquoi $K_1$ et $K_2$ rencontrent les spécifications
-\end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -231,6 +226,36 @@ graph_bode(at, bt)
 
 % TODO: Calcul des signaux aux points 1 et 2
 %   - [ ] explication du raisonnement
+
+\begin{frame}
+\frametitle{Analyse des signaux aux points 1}
+\footnotesize
+\begin{align}
+  Y(t)&=0.25\left|H_{1}\right|\left|H_{2}\right| \sin \left[2 \pi f t+\angle H_{1}+\angle H_{2}\right] \\
+  \left|H_{1}\right|&=\frac{\left|-j^{2} \omega^{2}\right|}{\left|j^{2} \omega^{2}+8824 j \omega+3.94 E 9\right|} \\
+  \left|H_{1}\right|&=0.989 \\
+  \left|H_{2}\right|&=\frac{\left|991102673^{2}\right|}{\left|-\omega^{2}+45044 \omega j+991102673\right|} \\
+  \left|H_{2}\right|&=0.965 \\
+  \angle H_{1}&=\arctan \left(-j^{2} \omega^{2}\right)-\arctan \left(j^{2} \omega^{2}+8824 j \omega+3.94 E 9\right) \\
+  \angle H_{1}&=-2.55 \\
+  \angle H_{2}&=\arctan \left(991102673^{2}\right)-\arctan \left(-\omega^{2}+45044 \omega j+991102673\right) \\
+  \angle H_{2}&=2.38
+\end{align}
+\end{frame}
+
+\begin{frame}
+\frametitle{Analyse des signaux aux points 2}
+\footnotesize
+\begin{align}
+  Y(s)&=X(s) \cdot H(s) \\
+  Y(S)&=\frac{1}{s} \cdot-\frac{s^{2}}{s^{2}+\frac{\omega_{c}}{Q} s+\omega_{c}^{2}} \\
+  Y(s)&=-\frac{s}{s^{2}+\frac{\omega_{c}}{Q} s+\omega_{c}^{2}} \\
+  Y(t)&=r \cdot e^{-a \cdot t} \cdot \cos (b t+\theta) \cdot u(t) \\
+  r&=\sqrt{\frac{\omega_{c}^{2}}{\omega_{c}^{2}-\left(\frac{\omega_{c}}{2 \cdot Q}\right)^{2}}} \\
+  b&=\sqrt{\omega_{c}^{2}-\left(\frac{\omega_{c}}{2 \cdot Q}\right)^{2}} \\
+  \theta&=\arctan \left(\frac{-\frac{\omega_{c}}{2 \cdot Q}}{-\sqrt{\omega_{c}^{2}-\left(\frac{\omega_{c}}{2 \cdot Q}\right)^{2}}}\right.
+\end{align}
+\end{frame}
 
 \subsection{GEN230: Pourquoi le filtre et le sommateur sont-ils en erreur?}
 
@@ -330,7 +355,7 @@ graph_bode(az, bz)
 \begin{frame}
 \frametitle{Simulations Altium du filtre corrigé}
 \begin{figure}
-\centering % TODO: Exporter les images
+\centering
 \includegraphics[width=.8\textwidth]{figure/altium-bode-filter.png}
 \caption{Lieu de bode du filtre corrigé}
 \label{fig:altium-bode-filter}
@@ -340,7 +365,7 @@ graph_bode(az, bz)
 \begin{frame}
 \frametitle{Simulations Altium du filtre corrigé (suite)}
 \begin{figure}
-\centering % TODO: Exporter les images
+\centering
 \includegraphics[width=.8\textwidth]{figure/altium-monte-carlo-filter.png}
 \caption{Simulation Monte Carlo du filtre corrigé}
 \label{fig:altium-monte-carlo-filter}
@@ -357,7 +382,7 @@ graph_bode(az, bz)
 \begin{frame}
 \frametitle{Simulations Altium du circuit complet corrigé}
 \begin{figure}
-\centering % TODO: Exporter les images
+\centering
 \includegraphics[width=.8\textwidth]{figure/altium-bode-complete.png}
 \caption{Lieu de bode du circuit complet corrigé}
 \label{fig:altium-bode-complete}
@@ -367,7 +392,7 @@ graph_bode(az, bz)
 \begin{frame}
 \frametitle{Simulations Altium du circuit complet corrigé (suite)}
 \begin{figure}
-\centering % TODO: Exporter les images
+\centering
 \includegraphics[width=.8\textwidth]{figure/altium-monte-carlo-complete.png}
 \caption{Simulation Monte Carlo du filtre corrigé}
 \label{fig:altium-monte-carlo-complete}
