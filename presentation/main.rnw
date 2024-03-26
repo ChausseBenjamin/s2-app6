@@ -22,13 +22,15 @@
 \setbeamercolor{item projected}{bg=green!40!black,fg=white}
 \setbeamercolor{subitem projected}{bg=green!40!black,fg=white}
 \setbeamercolor{subsubitem projected}{bg=green!40!black,fg=white}
+% Change the color of "Figure X -" in captions
+\setbeamercolor{caption name}{fg=green!40!black}
 
 \renewcommand{\frenchtablename}{Tableau}
 
 
 \renewcommand{\frenchtablename}{Tableau}
 
-\title{S2-APP6: Analyse d'un égaliseur analogique}
+\title[S2-APP6: Analyse d'EQ analogique]{S2-APP6: Analyse d'un égaliseur analogique}
 \author[Benjamin Chausse \& Cédrick Pelchat]{
   Benjamin Chausse (chab1704)\\
   Cédrick Pelchat (pelc1105)
@@ -101,11 +103,64 @@ plt.rcParams.update({'ytick.labelsize': 4.0})
   \end{figure}
 \end{frame}
 
+\begin{frame}
+\frametitle{Idée générale (suite)}
+\begin{table}
+  \centering
+  \caption{Trouvailles faites lors de l'analyse de l'égaliseur}
+  \label{tab:wrong-components}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Section de circuit fautive} & \textbf{Composante(s) erronée(s)} \\
+    \midrule
+    \multirow{2}{*}{Assemblement des filtres ($K_1 \& K_2$)} & $R_{11}$ \\
+    & $R_{35}$ \\
+    \midrule
+    \multirow{2}{*}{Filtre passe-haut $f_c=7$ kHz} & $R_{26}$ \\
+    & $R_{27}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Fonction de transfert python}
+<<PythonHProof>>=
+print('TODO: Fonction de transfert python')
+@
+\begin{itemize}
+  \item TODO: Les buts du client sont-ils atteints (déphasage, ronflement)
+\end{itemize}
+\end{frame}
+
 \subsection{GEN211: Présentation du lieu de bode}
 
 % TODO: Présentation du lieu de bode CIRCUIT COMPLET CORRIGÉ
 %   - [ ] Démontrer comment k1 et k2 sont déterminés (code python?)
 %   - [ ] Expliquer pourquoi k1 et k2 rencontrent les spécifications
+
+\begin{frame}[fragile]
+\frametitle{Détermination de $K_1$ et $K_2$}
+<<K1K2>>=
+print('TODO: Code python pour déterminer K1 et K2')
+@
+\textbf{Fonctions rencontrées par $K_1$ et $K_2$}
+\begin{itemize}
+  \item TODO: Expliquer pourquoi $K_1$ et $K_2$ rencontrent les spécifications
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Réponse en fréquence du circuit complet}
+\begin{figure}
+\centering % TODO: lieu de bode du circuit complet
+<<CompleteBodePlot,echo=FALSE>>=
+@
+\caption{Lieu de bode du circuit complet}
+\label{fig:complete-bode}
+\end{figure}
+\end{frame}
+
 
 \subsection{GEN211: Analyse des signaux aux points 1 et 2}
 
@@ -116,7 +171,7 @@ plt.rcParams.update({'ytick.labelsize': 4.0})
 
 % TODO: Présenter étapes importantes du calcul à partir du circuit
 
-\section{Analyse expérimentale}
+\section{Observations expérimentales}
 
 \subsection{GEN211: Code python en temps réel}
 
@@ -125,11 +180,65 @@ plt.rcParams.update({'ytick.labelsize': 4.0})
 %   - [ ] Lieu de bode
 %   - [ ] Délai de groupe (incluant bon k1 et k2 + gains des 3 filtres 0dB)
 
+\begin{frame}
+\frametitle{Pôles et zéros du filtre corrigé}
+\begin{figure}
+\centering
+<<PolesZerosCorrectedPlot,echo=FALSE>>=
+@
+\caption{Pôles et zéros du filtre corrigé}
+\label{fig:poles-zeros-corrected}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lieu de Bode du filtre corrigé}
+\begin{figure}
+\centering
+<<BodeCorrectedPlot,echo=FALSE>>=
+@
+\caption{Pôles et zéros du filtre corrigé}
+\label{fig:bode-corrected}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Délai de groupe du filtre corrigé}
+\begin{figure}
+\centering
+<<DelayCorrectedPlot,echo=FALSE>>=
+@
+\caption{Délai de groupe du filtre corrigé}
+\label{fig:delay-corrected}
+\end{figure}
+\end{frame}
+
 \subsection{GEN211: Simulation Altium du filtre corrigé}
 
 % TODO: Simulation Altium
 %   - [ ] Lieu de bode
 %   - [ ] Monte Carlo
+
+\begin{frame}
+\frametitle{Simulations Altium du filtre corrigé}
+\begin{figure}
+\centering % TODO: Exporter les images
+% \includegraphics[width=0.5\textwidth]{figure/altium-bode-filter.png}
+\caption{Lieu de bode du filtre corrigé}
+\label{fig:altium-bode-filter}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Simulations Altium du filtre corrigé (suite)}
+\begin{figure}
+\centering % TODO: Exporter les images
+% \includegraphics[width=0.5\textwidth]{figure/altium-monte-carlo-filter.png}
+\caption{Simulation Monte Carlo du filtre corrigé}
+\label{fig:altium-monte-carlo-filter}
+\end{figure}
+\end{frame}
+
 
 \subsection{GEN211: Simulation Altium du circuit complet corrigé}
 
@@ -137,30 +246,58 @@ plt.rcParams.update({'ytick.labelsize': 4.0})
 %   - [ ] Lieu de bode
 %   - [ ] Délai de groupe à la sortie
 
+\begin{frame}
+\frametitle{Simulations Altium du circuit complet corrigé}
+\begin{figure}
+\centering % TODO: Exporter les images
+% \includegraphics[width=0.5\textwidth]{figure/altium-bode-complete.png}
+\caption{Lieu de bode du circuit complet corrigé}
+\label{fig:altium-bode-complete}
+\end{figure}
+\end{frame}
 
-\section{Frames non-triées TODO: à trier}
+\begin{frame}
+\frametitle{Simulations Altium du circuit complet corrigé (suite)}
+\begin{figure}
+\centering % TODO: Exporter les images
+% \includegraphics[width=0.5\textwidth]{figure/altium-monte-carlo-complete.png}
+\caption{Simulation Monte Carlo du filtre corrigé}
+\label{fig:altium-monte-carlo-complete}
+\end{figure}
+\end{frame}
+
+
+\section{Slides non-triées TODO: à trier}
 
 \begin{frame}
   \frametitle{Papier 3}
   \begin{align}
     \frac{V_x-0}{R_2} &= \frac{0-V_s}{2C_3} \\
     \frac{V_x}{R_2} &= \frac{-V_s}{2C_3} \\
-    V_x &= \frac{-V_sR_2}{2C_3}
-  \end{align}
-  \begin{align}
+    V_x &= \frac{-V_sR_2}{2C_3} \\
     \frac{V_e - V_x}{R} &= \frac{V_x - V_s}{R} + \frac{V_x}{Z_{C_2}} + \frac{V_x}{R_2} \\
     \frac{V_e}{R} &= \frac{2V_x}{R} - \frac{V_s}{R} + \frac{V_x}{Z_{C_2}} + \frac{V_x}{R_2} \\
-    \frac{V_e}{R} &= V_x \left( \frac{R}{R} + \frac{1}{Z_{C_2}} + \frac{1}{R_2} \right) - \frac{V_s}{R} \\
-    V_e + V_s &= R V_x \left( \frac{R}{R} + \frac{1}{Z_{C_2}} + \frac{1}{R_2} \right) \\
+    % XXX: C'est quoi qui est réellement ecrit au R/R ?
+    \frac{V_e}{R} &= V_x \left( \frac{2}{R} + \frac{1}{Z_{C_2}} + \frac{1}{R_2} \right) - \frac{V_s}{R} \\
+    V_e + V_s &= R V_x \left( \frac{2}{R} + \frac{1}{Z_{C_2}} + \frac{1}{R_2} \right)
   \end{align}
 \end{frame}
 
 \begin{frame}
   \frametitle{Papier 4}
   \begin{align}
-    V_e &= RV_x \left( \frac{R}{R} + \frac{1}{R_2} + \right)
+    V_e &= RV_x \left( \frac{2}{R} + \frac{1}{R_2} + \right) \\
+    V_s &= \frac{-V_xZ_{C_3}}{R_2} \\
+    % XXX: 2/R ou 1/R (premiere frac du \left( \right) )?
+    H &= \frac {\frac{-1}{R_2sC_3} }{
+           R\left(\frac{2}{R}+\frac{1}{R_2}+\frac{sC_2}{1}\right)+\frac{1}{R_2sC_3}
+         } \\
+    H &= \frac{1}{ RR_2sC_3 + \left(\frac{2}{R} + \frac{1}{R_2} + sC_2\right)+1 } \\
+    H &= \frac{1}{s\left[(R_2+2R)C_3\right]+R R_2 C_2 C_3 s^2 +1} \\
+    H &= \frac{\frac{1}{R R_2 C_2 C_3}}{
+      s^2 + s\left[\frac{R_2 + 2R}{R R_2 C_2}\right]+\frac{1}{R R_2 C_2 C_3}
+    }
   \end{align}
 \end{frame}
 
 \end{document}
-
