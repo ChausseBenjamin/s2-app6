@@ -5,6 +5,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{booktabs}
+\usepackage{siunitx}
 \usepackage{multirow}
 
 % \usetheme{Madrid}
@@ -83,6 +84,39 @@ plt.rcParams.update({'font.size': 8})
 plt.rcParams.update({'xtick.labelsize': 4.0})
 plt.rcParams.update({'ytick.labelsize': 4.0})
 @
+<<ButterDef,echo=FALSE>>=
+@
+<<BodeDef,echo=FALSE>>=
+def graph_bode(b1, a1):
+  # Ajouter le code pour generer la carte des poles et zeros et le lieu de Bode
+  # utiliser les fonctions dans helpers.py
+  # hp.bodeplot(b1, a1, title)
+
+  hp.bodeplot(b1, a1, "Délai de groupe")
+@
+
+<<PolesZerosDef,echo=FALSE>>=
+def graphe_poles_zeros(b1, a1, title):
+  z1, p1, k1 = signal.tf2zpk(b1, a1)
+  hp.pzmap1(z1, p1, title)
+@
+
+<<DelayDef,echo=FALSE>>=
+def graph_delai(b1, a1):
+  magp, php, wp, fig, ax = hp.bodeplot(b1, a1, "Égalisateur")
+  hp.grpdel1(wp, -np.diff(php) / np.diff(wp), "Égalisateur")
+@
+
+<<SeriesDef,echo=FALSE>>=
+def series_fct(freq1, type1, freq2, type2):
+  # type 'low' ou 'high'
+  b1, a1 = butterworth(freq1, type1)
+  z1, p1, k1 = signal.tf2zpk(b1, a1)
+  b2, a2 = butterworth(freq2, type2)
+  z2, p2, k2 = signal.tf2zpk(b2, a2)
+  zt, pt, kt = hp.seriestf(z1, p1, k1, z2, p2, k2)
+  return zt, pt, kt
+@
 
 \section{Observation théorique}
 \subsection{GEN211: Conception générale}
@@ -126,8 +160,21 @@ plt.rcParams.update({'ytick.labelsize': 4.0})
 \begin{frame}[fragile]
 \frametitle{Fonction de transfert python}
 <<PythonHProof>>=
-print('TODO: Fonction de transfert python')
+def butterworth(freq, type):
+  """
+  :param freq: Fréquence de coupure du filtre
+  :param type: Type de filtre ('low' ou 'high')
+  :return: Coefficients au numérateur et dénominateur du filtre
+  """
+  wc = 2 * np.pi * freq  # fréquence de coupure rad/s
+  b1, a1 = signal.butter(2, wc, type, analog=True)
+  return b1, a1
+# TODO: Ajouter les fonctions de transfert des autres filtres
 @
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Fonction de transfert python (suite)}
 \begin{itemize}
   \item TODO: Les buts du client sont-ils atteints (déphasage, ronflement)
 \end{itemize}
@@ -140,9 +187,26 @@ print('TODO: Fonction de transfert python')
 %   - [ ] Expliquer pourquoi k1 et k2 rencontrent les spécifications
 
 \begin{frame}[fragile]
+% TODO: Print stuff related to K1 and K2
+% TODO: Maybe split this in two slides
 \frametitle{Détermination de $K_1$ et $K_2$}
 <<K1K2>>=
-print('TODO: Code python pour déterminer K1 et K2')
+k2 = 47.5/60.4
+# Passe bande
+zp, pp, kp = series_fct(1000, 'high', 5000, 'low')
+# Passe Bas
+ab, bb = butterworth(700, 'low')
+zb, pb, kb = signal.tf2zpk(ab, bb)
+# Passe haut
+ah, bh = butterworth(7000, 'high')
+zh, ph, kh = signal.tf2zpk(ah, bh)
+# Combinaison du passe haut et du passe bas
+zz, pz, kz = hp.paratf(zb, pb, -kb, zh, ph, -kh)
+# Combinaison de la combinaison precedente avec ke pass bande
+zt, pt, kt = hp.paratf(zz, pz, kz, zp, pp, kp*k2)
+# Fonction de transfert du circuit complet
+at, bt = signal.zpk2tf(zt, pt, kt)
+# TODO: print k1 and k2
 @
 \textbf{Fonctions rencontrées par $K_1$ et $K_2$}
 \begin{itemize}
@@ -155,6 +219,7 @@ print('TODO: Code python pour déterminer K1 et K2')
 \begin{figure}
 \centering % TODO: lieu de bode du circuit complet
 <<CompleteBodePlot,echo=FALSE>>=
+graph_bode(at, bt)
 @
 \caption{Lieu de bode du circuit complet}
 \label{fig:complete-bode}
@@ -171,6 +236,46 @@ print('TODO: Code python pour déterminer K1 et K2')
 
 % TODO: Présenter étapes importantes du calcul à partir du circuit
 
+\begin{frame}
+\frametitle{Erreurs dans le filtre}
+\footnotesize
+\begin{align}
+  \frac{V_{x}-0}{Z_{c}}&=\frac{0-V s}{R_{27}} \\
+  V_{x}&=\frac{-V_{s}}{R_{27} \cdot Z_{c}} \\
+  \frac{V_{e}-V_{x}}{Z_{c}}&=\frac{V_{x}-V_{s}}{Z_{c}}+\frac{V_{x}}{Z_{c}}+\frac{V_{x}}{R_{26}} \\
+  \frac{V_{e}+V_{s}}{Z_{c}}&=V_{x}\left(\frac{3}{Z_{c}}+\frac{1}{R_{26}}\right) \\
+  V_{e}+V_{s}&=V_{x}\left(3+\frac{Z_{c}}{R_{26}}\right) \\
+  V_{e}+V s&=V_{x}\left(3+\frac{1}{s \cdot c \cdot R_{26}}\right) \\
+  V_{e}&=V_{x}\left(3+\frac{1}{s \cdot c \cdot R_{26}}+R_{27} \cdot s \cdot C\right) \\
+  V_{s}&=-V_{x} \cdot s \cdot C \cdot R_{27} \\
+\end{align}
+\end{frame}
+
+\begin{frame}
+\frametitle{Erreurs dans le filtre (suite)}
+\begin{align}
+  H(s)&=\frac{V_{s}}{V_{e}}=\frac{-V_{x} \cdot s \cdot C \cdot R_{27}}{V_{x}\left(3+\frac{1}{s \cdot c \cdot R_{26}}+R_{27} \cdot s \cdot C\right)} \\
+  H(s)&=\frac{-s^{2}}{s^{2}+\frac{3 \cdot s}{C \cdot R_{27}}+\frac{1}{R_{26} \cdot R_{27} \cdot C^{2}}} \\
+  \frac{3}{C \cdot R_{27}}&=\frac{\omega_{0}}{Q} \\
+  Q&=0.707 \\
+  \frac{1}{R_{26} \cdot R_{27} \cdot C^{2}}&=w_{0}^{2} \\
+  R_{27}&=\frac{3 \cdot Q}{C \cdot \omega_{0}} \\
+  R_{26}&=\frac{1}{\omega_{0}^{2} \cdot R_{27} \cdot C^{2}}
+\end{align}
+\end{frame}
+
+\begin{frame}
+\frametitle{Erreurs dans le sommateur}
+\begin{align}
+  \frac{ R_{71} }{R_{35}} &= 1  \Rightarrow R_{71} = R_{35} \\
+  R_{71} &= \SI{47.5}{\kilo\ohm} \Rightarrow R_{35} = \SI{47.5}{\kilo\ohm} \\
+  K_1 &= 1 \textrm{(Déterminé de façon expérimentale)} \\
+  K_1 &= \frac{R_{71}}{R_{11}} = 1 \Rightarrow R_{11} = R_{71} = \SI{47.5}{\kilo\ohm} \\
+  R_{25} &= \SI{60.4}{\kilo\ohm} \\
+  K_2 &= \frac{R_{71}}{R_{25}} \Rightarrow K_2 = \frac{47.5}{60.4} = 0.79 \\
+\end{align}
+\end{frame}
+
 \section{Observations expérimentales}
 
 \subsection{GEN211: Code python en temps réel}
@@ -181,24 +286,27 @@ print('TODO: Code python pour déterminer K1 et K2')
 %   - [ ] Délai de groupe (incluant bon k1 et k2 + gains des 3 filtres 0dB)
 
 \begin{frame}
-\frametitle{Pôles et zéros du filtre corrigé}
+\frametitle{Filtre corrigé}
 \begin{figure}
 \centering
-<<PolesZerosCorrectedPlot,echo=FALSE>>=
+<<PolesZerosFilter,echo=FALSE>>=
+az, bz = butterworth(7000, 'high')
+graphe_poles_zeros(az,bz, "du filtre erronné corrigé")
 @
 \caption{Pôles et zéros du filtre corrigé}
-\label{fig:poles-zeros-corrected}
+\label{fig:poles-zeros-filter}
 \end{figure}
 \end{frame}
 
 \begin{frame}
-\frametitle{Lieu de Bode du filtre corrigé}
+\frametitle{Filtre corrigé (suite)}
 \begin{figure}
 \centering
 <<BodeCorrectedPlot,echo=FALSE>>=
+graph_bode(az, bz)
 @
-\caption{Pôles et zéros du filtre corrigé}
-\label{fig:bode-corrected}
+\caption{Lieu de Bode du filtre corrigé}
+\label{fig:bode-filter}
 \end{figure}
 \end{frame}
 
@@ -223,7 +331,7 @@ print('TODO: Code python pour déterminer K1 et K2')
 \frametitle{Simulations Altium du filtre corrigé}
 \begin{figure}
 \centering % TODO: Exporter les images
-% \includegraphics[width=0.5\textwidth]{figure/altium-bode-filter.png}
+\includegraphics[width=.8\textwidth]{figure/altium-bode-filter.png}
 \caption{Lieu de bode du filtre corrigé}
 \label{fig:altium-bode-filter}
 \end{figure}
@@ -233,7 +341,7 @@ print('TODO: Code python pour déterminer K1 et K2')
 \frametitle{Simulations Altium du filtre corrigé (suite)}
 \begin{figure}
 \centering % TODO: Exporter les images
-% \includegraphics[width=0.5\textwidth]{figure/altium-monte-carlo-filter.png}
+\includegraphics[width=.8\textwidth]{figure/altium-monte-carlo-filter.png}
 \caption{Simulation Monte Carlo du filtre corrigé}
 \label{fig:altium-monte-carlo-filter}
 \end{figure}
@@ -250,7 +358,7 @@ print('TODO: Code python pour déterminer K1 et K2')
 \frametitle{Simulations Altium du circuit complet corrigé}
 \begin{figure}
 \centering % TODO: Exporter les images
-% \includegraphics[width=0.5\textwidth]{figure/altium-bode-complete.png}
+\includegraphics[width=.8\textwidth]{figure/altium-bode-complete.png}
 \caption{Lieu de bode du circuit complet corrigé}
 \label{fig:altium-bode-complete}
 \end{figure}
@@ -260,7 +368,7 @@ print('TODO: Code python pour déterminer K1 et K2')
 \frametitle{Simulations Altium du circuit complet corrigé (suite)}
 \begin{figure}
 \centering % TODO: Exporter les images
-% \includegraphics[width=0.5\textwidth]{figure/altium-monte-carlo-complete.png}
+\includegraphics[width=.8\textwidth]{figure/altium-monte-carlo-complete.png}
 \caption{Simulation Monte Carlo du filtre corrigé}
 \label{fig:altium-monte-carlo-complete}
 \end{figure}

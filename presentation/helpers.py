@@ -45,7 +45,7 @@ def pzmap1(z, p, title):
     if len(z):
         ax.plot(np.real(z), np.imag(z), 'o', fillstyle='none', label='Zéros')  # affichage des zeros avec marqueurs 'o' ouverts
     ax.plot(np.real(p), np.imag(p), 'x', fillstyle='none', label='Pôles')  # affichage des poles avec des marqueurs 'x'
-    fig.suptitle('Pôle/zéros de ' + title)
+    # fig.suptitle('Pôle/zéros de ' + title)
     ax.set_xlabel("Partie réelle ($Re(s)$)")
     ax.set_ylabel("Partie imaginaire ($Im(s)$)")
     # Recherche des min et max pour ajuster les axes x et y du graphique
@@ -73,7 +73,7 @@ def bode1(w, mag, phlin, title):
     """
 
     fig, ax = plt.subplots(2, 1, figsize=(6, 6))
-    fig.suptitle(title + ' Frequency Response')
+    # fig.suptitle(title + ' Frequency Response')
 
     ax[0].plot(w, mag)
     ax[0].set_xscale('log')
