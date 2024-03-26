@@ -1,0 +1,166 @@
+\documentclass[10pt]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{multirow}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]{}% Number float-like environments
+
+\usetheme{CambridgeUS}
+\usecolortheme{spruce}
+
+\renewcommand{\frenchtablename}{Tableau}
+
+\title{Analyse d'un égaliseur analogique}
+\author[Benjamin Chausse \& Cédrick Pelchat]{
+  Benjamin Chausse (chab1704)\\
+  Cédrick Pelchat (pelc1105)
+}
+\institute[UDS]{Université de Sherbrooke}
+\date{\today}
+% \logo{\includegraphics[height=2cm]{logo.pdf}}
+
+\begin{document}
+\maketitle
+
+% Default chunk options + python engine by default
+<<ChunkSetup,echo=FALSE>>=
+library(knitr)
+opts_chunk$set(
+  message=FALSE,
+  warning=FALSE,
+  fig.width=5,
+  fig.height=4,
+  engine='python',
+  out.width='.5\\textwidth',
+  highlight=FALSE,
+  size='footnotesize',
+  tidy=TRUE,
+  width=70
+)
+@
+<<PySetup,echo=FALSE>>=
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy.signal as signal
+import helpers as hp
+plt.rcParams.update({'font.size': 8})
+plt.rcParams.update({'xtick.labelsize': 4.0})
+plt.rcParams.update({'ytick.labelsize': 4.0})
+@
+
+% python initialization (libraries, etc...)
+
+\section{Vue d'ensemble}
+\begin{frame}
+\frametitle{Vue d'ensemble}
+\begin{table}
+  \centering
+  \caption{Trouvailles faites lors de l'analyse de l'égaliseur}
+  \label{tab:wrong-components}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Section de circuit fautive} & \textbf{Composante(s) erronée(s)} \\
+    \midrule
+    \multirow{2}{*}{Assemblement des filtres ($K_1 \& K_2$)} & $R_{11}$ \\
+    & $R_{35}$ \\
+    \midrule
+    \multirow{2}{*}{Filtre passe-haut $f_c=7$ kHz} & $R_{26}$ \\
+    & $R_{27}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\end{frame}
+
+\section{Simulations Python}
+\subsection{Définitions et logique Python}
+\begin{frame}[fragile]
+\frametitle{Définitions et logique Python}
+\textbf{Création de numérateurs et dénominateurs pour Butterworth:}
+<<ButterDef>>=
+def butterworth(freq, type):
+  """
+  :param freq: Fréquence de coupure du filtre
+  :param type: Type de filtre ('low' ou 'high')
+
+  :return: Numérateur et dénominateur du filtre Butterworth
+  """
+  # Frequence de coupure des filtres, à ajuster:
+  wc = 2 * np.pi * freq  # rad/s
+  # Création du filtre Butterworth avec SciPy
+  b, a = signal.butter(2, wc, type, analog=True)
+  return b, a
+@
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Définitions et logique Python}
+\textbf{Aggrégation de filtres en série (TODO: s'assurer de dire la bonne chose):}
+<<SeriesFctDef>>=
+def series_fct(freq1, type1, freq2, type2):
+  """
+  Mets en série deux filtres Butterworth
+
+  :param freq1: Fréquence de coupure du premier filtre
+  :param type1: Type du premier filtre ('low' ou 'high')
+  :param freq2: Fréquence de coupure du deuxième filtre
+  :param type2: Type du deuxième filtre ('low' ou 'high')
+
+  :return: Numérateur, dénominateur, et gain du filtre résultant
+  """
+  # type 'low' ou 'high'
+  b1, a1 = butterworth(freq1, type1)
+  z1, p1, k1 = signal.tf2zpk(b1, a1)
+  b2, a2 = butterworth(freq2, type2)
+  z2, p2, k2 = signal.tf2zpk(b2, a2)
+  zt, pt, kt = hp.seriestf(z1, p1, k1, z2, p2, k2)
+  return zt, pt, kt
+@
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Définitions et logique Python}
+\textbf{Création de graphiques Bode:}
+<<BodeDef>>=
+def graph_bode(b, a, title):
+  """
+  :param b: Numérateur du filtre
+  :param a: Dénominateur du filtre
+  :param title: Titre du graphique
+  """
+  z1, p1, k1 = signal.tf2zpk(b, a)
+  hp.pzmap1(z1, p1, title)
+  hp.bodeplot(b, a, title)
+  magp, php, wp, fig, ax = hp.bodeplot(b, a, "Délai de groupe")
+  hp.grpdel1(wp, -np.diff(php) / np.diff(wp), "Délai de groupe")
+@
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Définitions et logique Python}
+\textbf{Création du passe-bande par série de filtres:}
+<<BPDef>>=
+k2 = 47.5/60.4
+zp,pp,kp = series_fct(1000, 'high', 5000, 'low')
+@
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Définitions et logique Python}
+\begin{figure}
+\centering
+<<HPF7k,echo=FALSE>>=
+az,bz = butterworth(7000, 'high')
+graph_bode(az, bz, 'Circuit erronné (Passe haut 7000 Hz)')
+@
+\caption{Filtre passe-haut erroné $f_c=7$ kHz}
+\label{fig:HPF7k}
+\end{figure}
+\end{frame}
+
+\end{document}
+
