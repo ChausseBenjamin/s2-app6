@@ -55,8 +55,8 @@ def pzmap1(z, p, title):
         rootslist.append(z)
     rootslist.append(p)
     rootslist = [item for sublist in rootslist for item in sublist]
-    ax.set_xlim(np.amin(np.real(rootslist)) - .5, np.amax(np.real(rootslist)) + .5)
-    ax.set_ylim(np.amin(np.imag(rootslist)) - .5, np.amax(np.imag(rootslist)) + .5)
+    # ax.set_xlim((np.amin(np.real(rootslist)) - .5)*1.5, (np.amax(np.real(rootslist)) + 1)*1.5)
+    # ax.set_ylim((np.amin(np.imag(rootslist)) - .5)*1.5, (np.amax(np.imag(rootslist)) + 1)*1.5)
     return fig, ax
 
 
